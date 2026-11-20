@@ -94,7 +94,7 @@ Die Aufgabe: Jede Blog-Seite zeigt eine geschätzte Lesezeit an.
 
 Der volle Ablauf: erkunden, vorschlagen, prüfen, umsetzen, gegenprüfen, archivieren. Das Erkunden kannst du überspringen.
 
-**Warum neue Sitzungen?** So arbeitet die Fabrik am zweiten Tag: Jeder Schritt ist ein eigener Lauf, der bei null beginnt. Dazwischen prüft ein Mensch das Ergebnis und gibt es frei. Die neue Sitzung zeigt das im Kleinen. Du prüfst und committest, und der nächste Schritt findet den Stand allein in den Dateien im Repo, ohne Gedächtnis der letzten Sitzung.
+Alles läuft in **einer** Copilot-Sitzung, Schritt für Schritt. OpenSpec hat keine eingebaute Freigabe. Zwischen den Schritten prüfst du das Ergebnis und committest im zweiten Terminal.
 
 Öffne ein **zweites Terminal** im selben Ordner. Dort schaust du nach, was Copilot geschrieben hat.
 
@@ -109,8 +109,6 @@ Der volle Ablauf: erkunden, vorschlagen, prüfen, umsetzen, gegenprüfen, archiv
 Beim Bau dieses Repos nannte Copilot hier die betroffenen Dateien, zwei Alternativen und offene Fragen, etwa: Erscheint die Lesezeit auch auf der Übersichtsseite?
 
 ### 2. Vorschlag schreiben
-
-In derselben Sitzung:
 
 ```text
 /openspec-propose Show an estimated reading time on each blog post page, based on 200 words per minute, rounded up to whole minutes. Add unit tests.
@@ -128,9 +126,8 @@ In derselben Sitzung:
 
 ### 3. Prüfen und freigeben
 
-1. In Copilot: `/exit`. Du siehst eine Zusammenfassung mit Änderungen und AI Credits.
-2. Lies `proposal.md` und `tasks.md`. Das ist die Freigabe, die in der Fabrik in Jira passiert.
-3. Committe den Stand: `git add -A && git commit -m "Lesezeit: Vorschlag"`
+1. Lies `proposal.md` und `tasks.md`. Das ist die Freigabe, die in der Fabrik in Jira passiert.
+2. Committe den Stand: `git add -A && git commit -m "Lesezeit: Vorschlag"`
 
 Willst du etwas ändern, nimm `/openspec-update-change <name>`. Es überarbeitet die Artefakte und gleicht sie aneinander an.
 
@@ -142,7 +139,7 @@ Ab jetzt schreibt Copilot Code und lässt Tests laufen. Nenn ihm den Testbefehl 
 Factory rules: edit files with your file tools, not with shell scripts. Run the tests with exactly: ./bin/phpunit
 ```
 
-Starte Copilot neu und vertrau dem Ordner wieder mit `1. Yes`. Dann (ersetze `<name>`):
+Dann (ersetze `<name>`):
 
 ```text
 /openspec-apply-change <name>
@@ -151,7 +148,7 @@ Factory rules: edit files with your file tools, not with shell scripts. Run the 
 
 **Was du sehen solltest (etwa 1–2 Minuten):**
 
-- Copilot findet die Änderung allein aus den Dateien im Repo, mit `openspec status --change <name> --json`.
+- Copilot liest den Stand der Änderung mit `openspec status --change <name> --json`.
 - Rückfragen zu Dateiänderungen, etwa `src/Twig/AppExtension.php`, `templates/blog/post_show.html.twig`, `translations/messages+intl-icu.en.xlf` und Tests.
 - Eine Rückfrage zu `./bin/phpunit`. Die Tests laufen grün, mit etwa 55–57 Tests.
 - Manchmal will Copilot auch `vendor/bin/php-cs-fixer` oder `phpstan` laufen lassen. Das entscheidest du.
@@ -161,13 +158,13 @@ Factory rules: edit files with your file tools, not with shell scripts. Run the 
 
 ### 5. Gegenprüfen
 
-`/openspec-verify-change` prüft laut OpenSpec, ob die Umsetzung vollständig ist und zu den Artefakten passt. Nutze es vor dem Archivieren. In derselben Sitzung:
+`/openspec-verify-change` prüft laut OpenSpec, ob die Umsetzung vollständig ist und zu den Artefakten passt. Nutze es vor dem Archivieren.
 
 ```text
 /openspec-verify-change <name>
 ```
 
-Dann `/exit` und `git add -A && git commit -m "Lesezeit: umgesetzt"`.
+Dann committen: `git add -A && git commit -m "Lesezeit: umgesetzt"`.
 
 ### 6. Archivieren
 
@@ -183,15 +180,13 @@ Danach committen.
 
 Die Aufgabe: Tags, die sich nur in Groß- und Kleinschreibung unterscheiden, entstehen doppelt.
 
-OpenSpec hat keinen eigenen Bug-Ablauf. Der kurze Weg ist derselbe Vorschlag, nur kleiner, und alles in **einer** Sitzung. `design.md` ist laut OpenSpec optional. Ob Copilot es weglässt, entscheidet das Modell.
-
-Starte Copilot neu, vertrau dem Ordner, dann:
+OpenSpec hat keinen eigenen Bug-Ablauf. Der kurze Weg ist derselbe Vorschlag, nur kleiner. `design.md` ist laut OpenSpec optional. Ob Copilot es weglässt, entscheidet das Modell.
 
 ```text
 /openspec-propose Tag names that differ only in upper and lower case create duplicate tags. Normalize tag names to lowercase when saving. Add a regression test.
 ```
 
-Nach dem Vorschlag, in derselben Sitzung (Name aus der Zusammenfassung):
+Nach dem Vorschlag (Name aus der Zusammenfassung):
 
 ```text
 /openspec-apply-change <name>
@@ -259,15 +254,14 @@ TICKET>>>
 
 Die Werte stammen aus Vortests mit denselben Versionen. Bei dir können sie abweichen. Copilot Pro bietet 1.500 AI Credits im Monat. Den Verbrauch siehst du unten rechts in Copilot und nach `/exit`.
 
-## Was in allen Vortests galt
+## Die Fabrik am zweiten Tag
 
-- **OpenSpec hat keine eingebaute Freigabe.** Prüfen ist deine Aufgabe zwischen den Schritten.
-- **Den Stand findet Copilot in den Dateien im Repo.** OpenSpec legt keine ignorierte Zustandsdatei an. Alles steckt in committeten Dateien.
-- **Copilot fragt interaktiv vor jedem Schreiben.** Unbeaufsichtigt fragt es nicht, sondern lehnt ab. Den unbeaufsichtigten Betrieb zeigt ein optionaler Teil am zweiten Tag, mit eigener Anleitung.
+Die Fabrik nimmt OpenSpec, wenn das Jira-Ticket das Label `sdd-openspec` hat. Sie macht dieselben Schritte wie du hier, mit zwei Unterschieden:
 
-## Tag 2: die Fabrik
+- **Copilot fragt nicht.** Eine Liste freigegebener Werkzeuge ersetzt deine „Yes“-Antworten. Was nicht auf der Liste steht, lehnt Copilot ab, ohne zu fragen. Der Prozess endet trotzdem mit Exit-Code 0. Bei OpenSpec stehen dort `openspec` und `mkdir`, beim Umsetzen dazu `./bin/phpunit`.
+- **Neue Sitzungen an zwei Stellen.** Die Fabrik arbeitet in zwei Läufen: erst die Spezifikation, dann die Umsetzung. Dazwischen prüft ein Mensch die Spezifikation und gibt sie in Jira frei. Jeder Lauf beginnt mit einer neuen Copilot-Sitzung. Den Stand findet er nur in den Dateien im Repo. OpenSpec legt keine ignorierte Zustandsdatei an. Alles steckt in committeten Dateien.
 
-Die Fabrik nimmt OpenSpec, wenn das Jira-Ticket das Label `sdd-openspec` hat.
+Hier, lokal, ist alles ein durchgehender Ablauf in einer Sitzung. Den unbeaufsichtigten Betrieb zeigt ein optionaler Teil am zweiten Tag, mit eigener Anleitung.
 
 ## Lizenzen
 
