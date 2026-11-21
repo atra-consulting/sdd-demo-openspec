@@ -180,20 +180,6 @@ OpenSpec hat keinen eigenen kurzen Weg für Bugs. Du gehst denselben Ablauf wie 
 
 Im Vortest landete die Korrektur in `src/Form/DataTransformer/TagArrayToStringTransformer.php`, oft auch in `src/Entity/Tag.php`.
 
-## Runde 3: Feature „Beiträge pro Tag“ (falls noch Zeit ist)
-
-```text
-Show the number of published posts next to each tag name in the tag badges, for example "symfony (12)". Count all published posts with that tag, not only the ones on the current page. Add tests.
-```
-
-Probier dabei einen anderen Weg zu den vier Dateien:
-
-- **Schritt für Schritt:** `/openspec-new-change`, dann `/openspec-continue-change <name>` für jede Datei. So prüfst du jede einzeln.
-- **In einem Zug:** `/openspec-ff-change`.
-- **Geführt:** `/openspec-onboard` erklärt jeden Schritt und ändert dabei echten Code.
-
-Mehrere fertige Änderungen archiviert `/openspec-bulk-archive-change` auf einmal.
-
 ## Mit einem echten Jira-Ticket
 
 Ein Jira-Ticket ist Text von außen. Für das Modell soll es **Daten** sein, keine Anweisung. So rahmt auch die Fabrik am zweiten Tag jedes Ticket ein: Befehl in die erste Zeile, Block darunter, alles zusammen in Copilot einfügen.
