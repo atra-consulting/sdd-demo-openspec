@@ -1,6 +1,6 @@
 # sdd-demo-openspec: Symfony-Demo mit OpenSpec
 
-Dieses Repo ist die **Symfony-Demo** ([`symfony/demo`](https://github.com/symfony/demo), MIT-Lizenz, Commit `f42980c`), ein kleiner Blog mit PHP 8.4, Symfony, Doctrine, Twig, SQLite und 53 PHPUnit-Tests. **OpenSpec 2.0.0** ist schon eingerichtet, für die **GitHub Copilot CLI**. Du klonst das Repo, startest `copilot` und nutzt OpenSpecs Befehle sofort. Ein `openspec init` brauchst du nicht.
+Dieses Repo ist die [Symfony-Demo](https://github.com/symfony/demo), ein kleiner Blog mit PHP 8.4, Symfony, Doctrine, Twig, SQLite und 53 PHPUnit-Tests. Dazu liegt **OpenSpec 2.0.0** im Repo, für die **GitHub Copilot CLI** und mit allen 12 Workflows. Du klonst, startest `copilot` und legst los.
 
 Es gibt drei solche Repos, eins pro Framework:
 
@@ -8,30 +8,35 @@ Es gibt drei solche Repos, eins pro Framework:
 - **`sdd-demo-openspec`**: OpenSpec 2.0.0 (dieses Repo)
 - [`sdd-demo-bmad`](https://github.com/atra-consulting/sdd-demo-bmad): BMad 6.12.4
 
-Die Repos stammen von atra consulting, für einen Workshop im November 2026. Sie zeigen Fakten aus Vortests, keine Empfehlung.
+atra consulting hat sie für einen Workshop im November 2026 gebaut. Sie zeigen Fakten aus Vortests, keine Empfehlung.
 
-## Was im Repo steckt
+## OpenSpec in Kürze
 
-| Commit | Inhalt |
-|---|---|
-| 1 | `symfony/demo` bei `f42980c`, unverändert |
-| 2 | Stand nach `composer install`. Die CI-Workflows von `symfony/demo` sind entfernt. Dessen README liegt jetzt in [`README.symfony-demo.md`](README.symfony-demo.md). |
-| 3 | OpenSpec 2.0.0, eingerichtet mit `openspec init --tools github-copilot --no-copilot-cloud`, mit allen 12 Workflows |
-| 4 | Diese README |
+OpenSpec arbeitet mit **Änderungen**. Jede Änderung ist ein Ordner `openspec/changes/<name>/` mit vier Dateien: `proposal.md` (warum und was), `design.md` (wie), `tasks.md` (Aufgaben) und `specs/` (was sich an der Spezifikation ändert). Beim Archivieren fließt die Änderung in `openspec/specs/` ein, die Gesamtspezifikation der App.
 
-OpenSpec hat angelegt:
+| Phase | Befehl | Ergebnis |
+|---|---|---|
+| Regeln, einmal pro Repo | von Hand | `context:` in `openspec/config.yaml` |
+| Erkunden, optional | `/openspec-explore` | Gespräch, keine Dateien |
+| Vorschlagen | `/openspec-propose` | alle vier Dateien in einem Schritt |
+| Umsetzen | `/openspec-apply-change` | Code, Tests, abgehakte Aufgaben |
+| Gegenprüfen, optional | `/openspec-verify-change` | Bericht: Passt der Code zu den Dateien? |
+| Archivieren | `/openspec-archive-change` | Änderung nach `changes/archive/`, Spezifikation nach `openspec/specs/` |
 
-- `.agents/skills/openspec-*`: 12 Skills. Copilot findet sie dort von selbst.
-- `openspec/`: `config.yaml`, `specs/` für den aktuellen Stand und `changes/` für laufende Änderungen.
+Was OpenSpec von den anderen beiden unterscheidet:
 
-Jeder OpenSpec-Workflow ist ein Skill. Standardmäßig richtet OpenSpec nur 6 der 12 Workflows ein. Hier sind alle 12 drin, damit du am ersten Tag möglichst viel von OpenSpec siehst.
+- **Spec Kit** gibt jedem Feature einen eigenen Ordner mit eigener Spezifikation. OpenSpec führt dagegen eine Gesamtspezifikation der App, und jede Änderung ergänzt sie. OpenSpec hat weniger Phasen.
+- **BMad** plant auch das Produkt, mit PRD, Epics und Sprints, und gibt seinen Agenten Rollen. OpenSpec beginnt bei der Änderung.
+- **Kosten im Vortest**, Fabrik, ein Ticket: OpenSpec 30–50 AI Credits, Spec Kit etwa 76, BMad etwa 89.
+
+OpenSpec hat keine eingebaute Freigabe. Nach jedem Schritt prüfst du selbst.
 
 ## Voraussetzungen
 
-- **Ein Copilot-Platz mit Zugriff auf Claude Sonnet 5.5**, zum Beispiel Copilot Pro. Copilot Free reicht nicht: Dort sind die Sonnet-Modelle gesperrt. Kommt Copilot über deine Firma, muss deren Richtlinie die Copilot CLI erlauben.
+- **Ein Copilot-Platz mit Claude Sonnet 5.5**, zum Beispiel Copilot Pro. Copilot Free reicht nicht. Bekommst du Copilot über deine Firma, muss deren Richtlinie die Copilot CLI erlauben.
 - **Copilot CLI 1.0.112 oder neuer.**
-- **PHP 8.4 oder neuer** mit den Erweiterungen `pdo_sqlite`, `intl`, `mbstring` und `xml`, dazu **Composer** und **git**.
-- **Node.js 22.12 oder neuer** und die **OpenSpec-CLI 2.0.0**. OpenSpecs Skills rufen den Befehl `openspec` auf, etwa `openspec new change` und `openspec status`. Ohne ihn bleiben die Skills stecken.
+- **PHP 8.4 oder neuer** mit `pdo_sqlite`, `intl`, `mbstring` und `xml`, dazu **Composer** und **git**.
+- **Node.js 22.12 oder neuer** und die **OpenSpec-CLI 2.0.0**. Die Skills rufen `openspec` auf. Ohne die CLI bleiben sie stecken.
 
 Auf dem Mac:
 
@@ -39,11 +44,10 @@ Auf dem Mac:
 brew install --cask copilot-cli
 brew install php composer node
 npm install -g @fission-ai/openspec@2.0.0
+export OPENSPEC_TELEMETRY=0   # schaltet OpenSpecs anonyme Nutzungsdaten ab
 ```
 
-OpenSpec sammelt anonyme Nutzungsdaten. Abschalten: `export OPENSPEC_TELEMETRY=0`.
-
-**Betriebssysteme:** Getestet ist macOS (Apple Silicon). Linux lief in den Vortests im Docker-Container, dieses Repo selbst nicht. Windows ist nicht getestet. Nimm dort WSL und folge den Linux-Schritten.
+Wir haben auf macOS (Apple Silicon) getestet. Unter Windows nimm WSL und folge den Linux-Schritten. Linux und Windows haben wir mit diesem Repo nicht getestet.
 
 Prüfen:
 
@@ -56,7 +60,7 @@ node --version         # v22.12 oder neuer
 openspec --version     # 2.0.0
 ```
 
-## Einrichten (wenige Minuten)
+## Einrichten
 
 ```bash
 git clone https://github.com/atra-consulting/sdd-demo-openspec.git
@@ -66,12 +70,11 @@ composer install
 ./bin/phpunit
 ```
 
-- `git config core.hooksPath /dev/null` schaltet git-Hooks in diesem Klon ab. So kann ein Agent über `git commit` keinen eigenen Code ausführen.
-- `composer install` lädt auch Dateien von jsDelivr herunter. Du brauchst also Internet. Mit Composer-Cache dauerte es 5 Sekunden, ohne Cache länger.
-- `./bin/phpunit` meldet am Ende `OK (53 tests, 120 assertions)`.
-- `git status` ist danach leer.
+- `git config core.hooksPath /dev/null` schaltet git-Hooks ab. So startet kein Agent über `git commit` eigenen Code.
+- `composer install` braucht Internet.
+- `./bin/phpunit` meldet `OK (53 tests, 120 assertions)`.
 
-Pushen kannst du in dieses Repo nicht. Du arbeitest lokal und committest lokal. Willst du deinen Stand teilen, leg ein eigenes Repo an und setz es als Remote.
+Du arbeitest und committest nur lokal. Pushen kannst du in dieses Repo nicht.
 
 ## Copilot starten
 
@@ -79,161 +82,121 @@ Pushen kannst du in dieses Repo nicht. Du arbeitest lokal und committest lokal. 
 copilot --model claude-sonnet-5.5
 ```
 
-- Im Kasten **„Confirm folder trust“** wählst du `1. Yes`. Das gilt für diese Sitzung.
-- Unten rechts steht **„Claude Sonnet 5.5“**.
-- Bist du nicht angemeldet, gib `/login` ein.
-- `copilot skill list` (im Terminal, ohne Copilot zu starten) listet die Skills auf. Dort stehen die 12 `openspec-*`-Skills. In Copilot verwaltet `/skills` sie.
+- Bei **„Confirm folder trust“** wählst du `1. Yes`.
+- Unten rechts steht **„Claude Sonnet 5.5“**. Bist du nicht angemeldet, gib `/login` ein.
+- Copilot fragt vor jeder Dateiänderung und vor jedem Befehl, der nicht nur liest. Lies kurz und wähle `1. Yes`.
 
-Copilot fragt vor jeder neuen Datei, jeder Dateiänderung und jedem Befehl, der nicht nur liest. Lies kurz, was es tun will, und wähle `1. Yes`. Lesende Befehle wie `cat`, `ls` und `grep` laufen ohne Rückfrage.
+Öffne ein **zweites Terminal** im selben Ordner. Nach jedem Schritt, der Dateien schreibt, prüfst du dort das Ergebnis und committest: `git add -A && git commit -m "<Schritt>"`.
 
-Die Antworten von Copilot sind nie zweimal gleich. „Was du sehen solltest“ beschreibt deshalb die Art der Ausgabe, nicht den genauen Wortlaut.
+Alles läuft in **einer** Copilot-Sitzung. Copilot antwortet nie zweimal gleich. „Was du sehen solltest“ beschreibt die Art der Ausgabe, nicht den Wortlaut.
+
+## Einmalig: Projektregeln festlegen
+
+Das machst du einmal pro Repo, vor dem ersten Feature. OpenSpec liest die Regeln aus dem Feld `context:` in `openspec/config.yaml`, beim Vorschlagen und beim Umsetzen. Öffne die Datei in deinem Editor. Der Anfang soll danach so aussehen:
+
+```yaml
+schema: spec-driven
+context: |
+  No new dependencies. Every change comes with PHPUnit tests.
+  Run the tests with exactly: ./bin/phpunit
+githubCopilot:
+  cloudAgent: false
+```
+
+Rück die Regeln mit zwei Leerzeichen ein, ohne Tabs. Sonst übergeht OpenSpec sie ohne Warnung.
 
 ## Runde 1: Feature „Lesezeit“
 
-Die Aufgabe: Jede Blog-Seite zeigt eine geschätzte Lesezeit an.
+Die Aufgabe: Jede Blog-Seite zeigt eine geschätzte Lesezeit an. Du gehst durch alle Phasen. Die optionalen kannst du überspringen.
 
-Der volle Ablauf: erkunden, vorschlagen, prüfen, umsetzen, gegenprüfen, archivieren. Das Erkunden kannst du überspringen.
-
-Alles läuft in **einer** Copilot-Sitzung, Schritt für Schritt. OpenSpec hat keine eingebaute Freigabe. Zwischen den Schritten prüfst du das Ergebnis und committest im zweiten Terminal.
-
-Öffne ein **zweites Terminal** im selben Ordner. Dort schaust du nach, was Copilot geschrieben hat.
-
-### 1. Erkunden
-
-`/openspec-explore` ist laut OpenSpec ein Denkpartner: Ideen erkunden, Probleme untersuchen, Anforderungen klären. Es schreibt keinen Code.
+### 1. Erkunden (optional)
 
 ```text
 /openspec-explore Where in this app would an estimated reading time for blog posts fit? Which files would change? Do not create files yet.
 ```
 
-Beim Bau dieses Repos nannte Copilot hier die betroffenen Dateien, zwei Alternativen und offene Fragen, etwa: Erscheint die Lesezeit auch auf der Übersichtsseite?
+**Was du sehen solltest:** die betroffenen Dateien, Alternativen und offene Fragen, etwa: Erscheint die Lesezeit auch auf der Übersichtsseite? Copilot schreibt nichts.
 
-### 2. Vorschlag schreiben
+### 2. Vorschlagen
 
 ```text
 /openspec-propose Show an estimated reading time on each blog post page, based on 200 words per minute, rounded up to whole minutes. Add unit tests.
 ```
 
-**Was du sehen solltest (etwa 1–2 Minuten):**
+**Was du sehen solltest (1–2 Minuten):**
 
-- Copilot liest zuerst den Code.
-- Es legt die Änderung an, etwa mit `openspec new change "add-reading-time"`.
-- Fünf bis acht Rückfragen: **„Do you want to run this command?“** für Befehle wie `mkdir -p openspec/changes/…`, und **„Create file“** für jede neue Datei. Wähle `1. Yes`.
-- Am Ende hat die Änderung `openspec/changes/<name>/` vier Artefakte: `proposal.md`, `design.md`, `tasks.md` und `specs/…/spec.md`. Code hat Copilot nicht angefasst. Zum Schluss nennt es den nächsten Skill, `openspec-apply-change`.
-- Unten rechts steht der Verbrauch in AI Credits.
+- Copilot liest den Code und legt die Änderung an, etwa mit `openspec new change "add-reading-time"`.
+- Fünf bis acht Rückfragen zu `mkdir` und neuen Dateien.
+- `openspec/changes/<name>/` mit `proposal.md`, `design.md`, `tasks.md` und `specs/…/spec.md`. Noch kein Code.
 
-**Prüfen (zweites Terminal):** `ls openspec/changes/*/`. **Merk dir den Namen der Änderung**, zum Beispiel `add-reading-time`.
+Den Namen der Änderung, etwa `add-reading-time`, brauchst du in den nächsten Schritten. `ls openspec/changes/` zeigt ihn. Setz ihn überall für `<name>` ein.
 
-### 3. Prüfen und freigeben
+### 3. Prüfen
 
-1. Lies `proposal.md` und `tasks.md`. Das ist die Freigabe, die in der Fabrik in Jira passiert.
-2. Committe den Stand: `git add -A && git commit -m "Lesezeit: Vorschlag"`
-
-Willst du etwas ändern, nimm `/openspec-update-change <name>`. Es überarbeitet die Artefakte und gleicht sie aneinander an.
+Lies `proposal.md` und `tasks.md`. Stimmt etwas nicht, sag es Copilot mit `/openspec-update-change <name>` und deiner Änderung. Es überarbeitet alle vier Dateien.
 
 ### 4. Umsetzen
 
-Ab jetzt schreibt Copilot Code und lässt Tests laufen. Nenn ihm den Testbefehl ausdrücklich. Sonst rät das Modell einen anderen. Darum hängst du an jeden Umsetzungs-Prompt diese Zeile an:
-
-```text
-Factory rules: edit files with your file tools, not with shell scripts. Run the tests with exactly: ./bin/phpunit
-```
-
-Dann (ersetze `<name>`):
+Ab jetzt schreibt Copilot Code und startet Tests. Hänge an jeden Umsetzungs-Prompt die Zeile „Factory rules: …“ an, wie hier. Ohne sie rät das Modell einen anderen Testbefehl.
 
 ```text
 /openspec-apply-change <name>
 Factory rules: edit files with your file tools, not with shell scripts. Run the tests with exactly: ./bin/phpunit
 ```
 
-**Was du sehen solltest (etwa 1–2 Minuten):**
+**Was du sehen solltest (1–2 Minuten):**
 
-- Copilot liest den Stand der Änderung mit `openspec status --change <name> --json`.
-- Rückfragen zu Dateiänderungen, etwa `src/Twig/AppExtension.php`, `templates/blog/post_show.html.twig`, `translations/messages+intl-icu.en.xlf` und Tests.
-- Eine Rückfrage zu `./bin/phpunit`. Die Tests laufen grün, mit etwa 55–57 Tests.
-- Manchmal will Copilot auch `vendor/bin/php-cs-fixer` oder `phpstan` laufen lassen. Das entscheidest du.
-- Am Ende sind die Aufgaben in `tasks.md` abgehakt.
+- Copilot liest den Stand mit `openspec status --change <name> --json`.
+- Änderungen etwa an `src/Twig/AppExtension.php`, `templates/blog/post_show.html.twig`, an den Übersetzungen und an Tests.
+- Die Tests laufen grün. Copilot hakt die Aufgaben in `tasks.md` ab.
 
-**Prüfen (zweites Terminal):** `./bin/phpunit` und `git status --short`.
+Prüfen: `./bin/phpunit` und `git status --short`.
 
-### 5. Gegenprüfen
-
-`/openspec-verify-change` prüft laut OpenSpec, ob die Umsetzung vollständig ist und zu den Artefakten passt. Nutze es vor dem Archivieren.
+### 5. Gegenprüfen (optional)
 
 ```text
 /openspec-verify-change <name>
 ```
 
-Dann committen: `git add -A && git commit -m "Lesezeit: umgesetzt"`.
+OpenSpec prüft, ob der Code vollständig ist und zu den vier Dateien passt.
 
 ### 6. Archivieren
-
-`/openspec-archive-change` schließt eine fertige Änderung ab. Die Änderung wandert nach `openspec/changes/archive/`. Ihre Spezifikation fließt in `openspec/specs/` ein, den aktuellen Stand der App.
 
 ```text
 /openspec-archive-change <name>
 ```
 
-Danach committen.
+Die Änderung wandert nach `openspec/changes/archive/`. Ihre Spezifikation fließt in `openspec/specs/` ein. Fragt Copilot, ob es die Spezifikation jetzt abgleichen soll, wähle Ja.
 
 ## Runde 2: Bug „Doppelte Tags“
 
 Die Aufgabe: Tags, die sich nur in Groß- und Kleinschreibung unterscheiden, entstehen doppelt.
 
-OpenSpec hat keinen eigenen Bug-Ablauf. Der kurze Weg ist derselbe Vorschlag, nur kleiner. `design.md` ist laut OpenSpec optional. Ob Copilot es weglässt, entscheidet das Modell.
+OpenSpec hat keinen eigenen kurzen Weg für Bugs. Du gehst denselben Ablauf wie in Runde 1, Schritte 2 bis 6. Der Vorschlag:
 
 ```text
 /openspec-propose Tag names that differ only in upper and lower case create duplicate tags. Normalize tag names to lowercase when saving. Add a regression test.
 ```
 
-Nach dem Vorschlag (Name aus der Zusammenfassung):
+Im Vortest landete die Korrektur in `src/Form/DataTransformer/TagArrayToStringTransformer.php`, oft auch in `src/Entity/Tag.php`.
 
-```text
-/openspec-apply-change <name>
-Factory rules: edit files with your file tools, not with shell scripts. Run the tests with exactly: ./bin/phpunit
-```
-
-**Was du sehen solltest:**
-
-- Eine zweite Änderung, etwa `normalize-tag-names-lowercase`. Im Vortest legte Copilot `design.md` trotzdem an, begründet mit „bestehende Tags in der Datenbank“.
-- Die Korrektur in `src/Form/DataTransformer/TagArrayToStringTransformer.php`, oft auch in `src/Entity/Tag.php`, dazu ein Regressionstest. `./bin/phpunit` ist grün.
-
-## Runde 3: Feature „Beiträge pro Tag“
-
-Die Aufgabe, falls noch Zeit ist:
+## Runde 3: Feature „Beiträge pro Tag“ (falls noch Zeit ist)
 
 ```text
 Show the number of published posts next to each tag name in the tag badges, for example "symfony (12)". Count all published posts with that tag, not only the ones on the current page. Add tests.
 ```
 
-Probier dabei einen Weg, den du noch nicht kennst:
+Probier dabei einen anderen Weg zu den vier Dateien:
 
-- **Schritt für Schritt:** `/openspec-new-change` legt die Änderung an. Jedes `/openspec-continue-change <name>` schreibt das nächste Artefakt. So prüfst du jedes einzeln.
-- **Im Schnelldurchlauf:** `/openspec-ff-change` schreibt alle Artefakte für die Umsetzung in einem Zug.
-- **Geführt:** `/openspec-onboard` führt laut OpenSpec einmal durch den ganzen Ablauf, mit Erklärungen und echter Arbeit am Code. Es ändert also auch Code.
+- **Schritt für Schritt:** `/openspec-new-change`, dann `/openspec-continue-change <name>` für jede Datei. So prüfst du jede einzeln.
+- **In einem Zug:** `/openspec-ff-change`.
+- **Geführt:** `/openspec-onboard` erklärt jeden Schritt und ändert dabei echten Code.
 
-Hast du mehrere fertige Änderungen, archiviert `/openspec-bulk-archive-change` sie zusammen. `/openspec-sync-specs` übernimmt die Spezifikation einer Änderung nach `openspec/specs/`, ohne sie zu archivieren.
-
-## Alle 12 Skills
-
-| Skill | Wofür, laut OpenSpec |
-|---|---|
-| `/openspec-explore` | Ideen erkunden, Probleme untersuchen, Anforderungen klären |
-| `/openspec-propose` | Neue Änderung mit allen Artefakten in einem Schritt |
-| `/openspec-new-change` | Neue Änderung anlegen, Artefakte danach einzeln |
-| `/openspec-continue-change` | Das nächste Artefakt schreiben |
-| `/openspec-ff-change` | Alle Artefakte bis zur Umsetzung in einem Zug |
-| `/openspec-update-change` | Artefakte überarbeiten und aneinander angleichen |
-| `/openspec-apply-change` | Aufgaben aus `tasks.md` umsetzen |
-| `/openspec-verify-change` | Prüfen, ob die Umsetzung zu den Artefakten passt |
-| `/openspec-sync-specs` | Spezifikation nach `openspec/specs/` übernehmen, ohne Archiv |
-| `/openspec-archive-change` | Fertige Änderung archivieren |
-| `/openspec-bulk-archive-change` | Mehrere Änderungen zusammen archivieren |
-| `/openspec-onboard` | Geführter Durchlauf mit Erklärungen und echtem Code |
+Mehrere fertige Änderungen archiviert `/openspec-bulk-archive-change` auf einmal.
 
 ## Mit einem echten Jira-Ticket
 
-Ein Ticket aus Jira ist Text von außen. Für das Modell soll es **Daten** sein, keine Anweisung. Die Fabrik vom zweiten Tag rahmt jedes Ticket deshalb so ein (`factory/agent.py`). So machst du es auch von Hand: Der Befehl steht in der ersten Zeile, der Block darunter. Kopier alle Zeilen zusammen und füge sie in Copilot ein.
+Ein Jira-Ticket ist Text von außen. Für das Modell soll es **Daten** sein, keine Anweisung. So rahmt auch die Fabrik am zweiten Tag jedes Ticket ein: Befehl in die erste Zeile, Block darunter, alles zusammen in Copilot einfügen.
 
 ```text
 /openspec-propose
@@ -248,26 +211,32 @@ TICKET>>>
 
 | Was | Dauer | AI Credits |
 |---|---|---|
-| Interaktiv: Lesezeit vorschlagen und umsetzen, Tag-Bug vorschlagen und umsetzen (Kit, 15. November 2026) | etwa 15 Minuten | etwa 60–80 |
-| Nur `/openspec-explore` zur Lesezeit (Bau dieses Repos, 20. November 2026) | 13 s | 13,7 |
-| Fabrik, unbeaufsichtigt, ein Ticket: Spezifikation plus Umsetzung (Test 2, 17. November 2026) | 68–80 s plus 90–147 s | etwa 30–50 |
+| Interaktiv: Lesezeit vorschlagen und umsetzen, Tag-Bug vorschlagen und umsetzen | etwa 15 Minuten | etwa 60–80 |
+| Nur `/openspec-explore` zur Lesezeit | 13 s | 13,7 |
+| Fabrik, unbeaufsichtigt, ein Ticket: Vorschlag, dann Umsetzung | 68–80 s plus 90–147 s | etwa 30–50 |
 
-Die Werte stammen aus Vortests mit denselben Versionen. Bei dir können sie abweichen. Copilot Pro bietet 1.500 AI Credits im Monat. Den Verbrauch siehst du unten rechts in Copilot und nach `/exit`.
+Die Vortests liefen im November 2026 mit denselben Versionen. Bei dir können die Werte abweichen. Copilot Pro bietet 1.500 AI Credits im Monat. Deinen Verbrauch zeigt Copilot unten rechts und nach `/exit`.
+
+## Über dieses Repo
+
+| Commit | Was |
+|---|---|
+| 1 | `symfony/demo` bei `f42980c`, unverändert |
+| 2 | Stand nach `composer install`, ohne die CI-Workflows von `symfony/demo`. Dessen README steht in [`README.symfony-demo.md`](README.symfony-demo.md). |
+| 3 | OpenSpec 2.0.0 mit `openspec init --tools github-copilot --no-copilot-cloud`, mit allen 12 Workflows statt der üblichen 6 |
+| 4 | Diese README |
+
+OpenSpec hat `.agents/skills/openspec-*` (12 Skills) und `openspec/` (`config.yaml`, `specs/`, `changes/`) angelegt.
+
+Lizenzen: Symfony-Demo MIT, siehe [`LICENSE`](LICENSE). OpenSpec ([Fission-AI/OpenSpec](https://github.com/Fission-AI/OpenSpec)) MIT.
+
+Stand: 20. November 2026. Wir haben mit Copilot CLI 1.0.112 und `claude-sonnet-5.5` getestet.
 
 ## Die Fabrik am zweiten Tag
 
-Die Fabrik nimmt OpenSpec, wenn das Jira-Ticket das Label `sdd-openspec` hat. Sie macht dieselben Schritte wie du hier, mit zwei Unterschieden:
+Die Fabrik nimmt OpenSpec, wenn das Jira-Ticket das Label `sdd-openspec` hat. Sie geht dieselben Schritte wie du, mit zwei Unterschieden:
 
-- **Copilot fragt nicht.** Eine Liste freigegebener Werkzeuge ersetzt deine „Yes“-Antworten. Was nicht auf der Liste steht, lehnt Copilot ab, ohne zu fragen. Der Prozess endet trotzdem mit Exit-Code 0. Bei OpenSpec stehen dort `openspec` und `mkdir`, beim Umsetzen dazu `./bin/phpunit`.
-- **Neue Sitzungen an zwei Stellen.** Die Fabrik arbeitet in zwei Läufen: erst die Spezifikation, dann die Umsetzung. Dazwischen prüft ein Mensch die Spezifikation und gibt sie in Jira frei. Jeder Lauf beginnt mit einer neuen Copilot-Sitzung. Den Stand findet er nur in den Dateien im Repo. OpenSpec legt keine ignorierte Zustandsdatei an. Alles steckt in committeten Dateien.
+- **Copilot fragt nicht.** Eine Liste freigegebener Werkzeuge ersetzt dein „Yes“. Alles andere lehnt Copilot ohne Rückfrage ab. Der Lauf endet trotzdem mit Exit-Code 0.
+- **Neue Sitzungen an zwei Stellen.** Die Fabrik arbeitet in zwei Läufen: erst der Vorschlag, dann die Umsetzung. Dazwischen gibt ein Mensch in Jira frei. Jeder Lauf startet eine neue Copilot-Sitzung und findet den Stand nur in den Dateien im Repo.
 
-Hier, lokal, ist alles ein durchgehender Ablauf in einer Sitzung. Den unbeaufsichtigten Betrieb zeigt ein optionaler Teil am zweiten Tag, mit eigener Anleitung.
-
-## Lizenzen
-
-- Symfony-Demo: MIT, siehe [`LICENSE`](LICENSE).
-- OpenSpec ([Fission-AI/OpenSpec](https://github.com/Fission-AI/OpenSpec)): MIT.
-
-## Stand
-
-Gebaut am 20. November 2026 mit OpenSpec 2.0.0. Getestet mit Copilot CLI 1.0.112 und dem Modell `claude-sonnet-5.5`.
+Lokal ist alles ein durchgehender Ablauf in einer Sitzung.
