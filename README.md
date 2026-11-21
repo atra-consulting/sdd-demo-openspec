@@ -28,6 +28,7 @@ Was OpenSpec von den anderen beiden unterscheidet:
 - **Spec Kit** gibt jedem Feature einen eigenen Ordner mit eigener Spezifikation. OpenSpec führt dagegen eine Gesamtspezifikation der App, und jede Änderung ergänzt sie. OpenSpec hat weniger Phasen.
 - **BMad** plant auch das Produkt, mit PRD, Epics und Sprints, und gibt seinen Agenten Rollen. OpenSpec beginnt bei der Änderung.
 - **Kosten im Vortest**, Fabrik, ein Ticket: OpenSpec 30–50 AI Credits, Spec Kit etwa 76, BMad etwa 89.
+- **Kosten im Test**, interaktiv, beide Tickets dieser README mit allen optionalen Schritten: Spec Kit 125 AI Credits, OpenSpec 173 (davon 14 fürs Erkunden in einer eigenen Sitzung), BMad 207.
 
 OpenSpec hat keine eingebaute Freigabe. Nach jedem Schritt prüfst du selbst.
 
@@ -36,7 +37,7 @@ OpenSpec hat keine eingebaute Freigabe. Nach jedem Schritt prüfst du selbst.
 - **Ein Copilot-Platz mit Claude Sonnet 5.5**, zum Beispiel Copilot Pro. Copilot Free reicht nicht. Bekommst du Copilot über deine Firma, muss deren Richtlinie die Copilot CLI erlauben.
 - **Copilot CLI 1.0.112 oder neuer.**
 - **PHP 8.4 oder neuer** mit `pdo_sqlite`, `intl`, `mbstring` und `xml`, dazu **Composer** und **git**.
-- **Node.js 22.12 oder neuer** und die **OpenSpec-CLI 2.0.0**. Die Skills rufen `openspec` auf. Ohne die CLI bleiben sie stecken.
+- **Node.js 22.12 oder neuer** und die **OpenSpec-CLI 2.0.0**. Die Skills rufen `openspec` auf. Ohne die CLI fehlt ihnen der Stand der Änderungen. Im Test machte `/openspec-explore` dann trotzdem weiter und las nur den Code.
 
 Auf dem Mac:
 
@@ -82,13 +83,17 @@ Du arbeitest und committest nur lokal. Pushen kannst du in dieses Repo nicht.
 copilot --model claude-sonnet-5.5
 ```
 
-- Bei **„Confirm folder trust“** wählst du `1. Yes`.
+- Bei jedem Start fragt Copilot zuerst **„Confirm folder trust“**. Wähle `1. Yes` und warte auf die leere Eingabezeile `❯`. Was du vorher tippst, geht verloren.
+- Die Warnung „Connected Connectors could not be loaded“ ist harmlos.
 - Unten rechts steht **„Claude Sonnet 5.5“**. Bist du nicht angemeldet, gib `/login` ein.
-- Copilot fragt vor jeder Dateiänderung und vor jedem Befehl, der nicht nur liest. Lies kurz und wähle `1. Yes`.
+- Vor jeder Dateiänderung und vor jedem Befehl, der nicht nur liest, fragt Copilot „Do you want to …?“. Lies kurz und wähle `1. Yes`. Die Option `2. Yes, and don't ask again` spart Klicks. Nimm sie trotzdem nicht. Nur so siehst du jeden Schritt, den Copilot macht.
+- Braucht Copilot eine Entscheidung von dir, erscheint **„Copilot needs information“** mit Optionen. Die erste empfiehlt Copilot. Die Pfeiltasten wählen, `Enter` schickt ab.
 
 Öffne ein **zweites Terminal** im selben Ordner. Nach jedem Schritt, der Dateien schreibt, prüfst du dort das Ergebnis und committest: `git add -A && git commit -m "<Schritt>"`.
 
-Alles läuft in **einer** Copilot-Sitzung. Copilot antwortet nie zweimal gleich. „Was du sehen solltest“ beschreibt die Art der Ausgabe, nicht den Wortlaut.
+Jedes Ticket bekommt eine **eigene** Copilot-Sitzung. Am Ende einer Runde gibst du `/exit` ein. Copilot zeigt dann, was die Sitzung verbraucht hat: AI Credits, Dauer und Tokens. Für die nächste Runde startest du Copilot neu.
+
+Am Ende vieler Schritte schlägt Copilot einen nächsten Schritt vor. Folge trotzdem dieser README. Copilot antwortet nie zweimal gleich. „Was du sehen solltest“ beschreibt die Art der Ausgabe, nicht den Wortlaut.
 
 ## Einmalig: Projektregeln festlegen
 
@@ -123,7 +128,7 @@ Die Aufgabe: Jede Blog-Seite zeigt eine geschätzte Lesezeit an. Du gehst durch 
 /openspec-propose Show an estimated reading time on each blog post page, based on 200 words per minute, rounded up to whole minutes. Add unit tests.
 ```
 
-**Was du sehen solltest (1–2 Minuten):**
+**Was du sehen solltest (2–4 Minuten):**
 
 - Copilot liest den Code und legt die Änderung an, etwa mit `openspec new change "add-reading-time"`.
 - Fünf bis acht Rückfragen zu `mkdir` und neuen Dateien.
@@ -144,13 +149,15 @@ Ab jetzt schreibt Copilot Code und startet Tests. Hänge an jeden Umsetzungs-Pro
 Factory rules: edit files with your file tools, not with shell scripts. Run the tests with exactly: ./bin/phpunit
 ```
 
-**Was du sehen solltest (1–2 Minuten):**
+**Was du sehen solltest (im Test etwa 30 Minuten):**
 
 - Copilot liest den Stand mit `openspec status --change <name> --json`.
 - Änderungen etwa an `src/Twig/AppExtension.php`, `templates/blog/post_show.html.twig`, an den Übersetzungen und an Tests.
-- Die Tests laufen grün. Copilot hakt die Aufgaben in `tasks.md` ab.
+- Copilot startet die Tests mehrmals und repariert eigene Tests, die fehlschlagen. Am Ende laufen sie grün, und Copilot hakt die Aufgaben in `tasks.md` ab.
 
-Prüfen: `./bin/phpunit` und `git status --short`.
+Plane für diesen Schritt eine halbe Stunde ein.
+
+Prüfen: `./bin/phpunit` und `git status --short`. Im Test hakte Copilot `tasks.md` trotz der Factory rules mit `sed -i` ab. Das schadet hier nicht.
 
 ### 5. Gegenprüfen (optional)
 
@@ -166,13 +173,15 @@ OpenSpec prüft, ob der Code vollständig ist und zu den vier Dateien passt.
 /openspec-archive-change <name>
 ```
 
-Die Änderung wandert nach `openspec/changes/archive/`. Ihre Spezifikation fließt in `openspec/specs/` ein. Fragt Copilot, ob es die Spezifikation jetzt abgleichen soll, wähle Ja.
+Die Änderung wandert nach `openspec/changes/archive/`. Ihre Spezifikation fließt in `openspec/specs/` ein. Copilot fragt, ob es die Spezifikation jetzt abgleichen soll. Wähle **Sync now**.
+
+Runde 1 ist fertig. Gib `/exit` ein und lies die Zusammenfassung.
 
 ## Runde 2: Bug „Doppelte Tags“
 
 Die Aufgabe: Tags, die sich nur in Groß- und Kleinschreibung unterscheiden, entstehen doppelt.
 
-OpenSpec hat keinen eigenen kurzen Weg für Bugs. Du gehst denselben Ablauf wie in Runde 1, Schritte 2 bis 6. Der Vorschlag:
+Starte Copilot neu, mit `copilot --model claude-sonnet-5.5`. OpenSpec hat keinen eigenen kurzen Weg für Bugs. Du gehst denselben Ablauf wie in Runde 1, Schritte 2 bis 6, und beendest die Sitzung mit `/exit`. Der Vorschlag:
 
 ```text
 /openspec-propose Tag names that differ only in upper and lower case create duplicate tags. Normalize tag names to lowercase when saving. Add a regression test.
@@ -197,11 +206,23 @@ TICKET>>>
 
 | Was | Dauer | AI Credits |
 |---|---|---|
-| Interaktiv: Lesezeit vorschlagen und umsetzen, Tag-Bug vorschlagen und umsetzen | etwa 15 Minuten | etwa 60–80 |
-| Nur `/openspec-explore` zur Lesezeit | 13 s | 13,7 |
+| Runde 1: Vorschlagen | etwa 3,5 Minuten | 16,6 |
+| Runde 1: Umsetzen | etwa 28 Minuten | 25,7 |
+| Runde 1: Gegenprüfen | 43 s | 4,3 |
+| Runde 1: Archivieren | etwa 2 Minuten | 28,2 |
+| Runde 2: Vorschlagen | 2,7 Minuten | 13,9 |
+| Runde 2: Umsetzen | etwa 33 Minuten | 34,1 |
+| Runde 2: Archivieren | etwa 1 Minute | 36,3 |
+| **Beide Runden zusammen** | **etwa 70 Minuten** | **159** |
+| Nur `/openspec-explore` zur Lesezeit, eigene Sitzung | 13–36 s | 13,7–14,0 |
 | Fabrik, unbeaufsichtigt, ein Ticket: Vorschlag, dann Umsetzung | 68–80 s plus 90–147 s | etwa 30–50 |
 
-Die Vortests liefen im November 2026 mit denselben Versionen. Bei dir können die Werte abweichen. Copilot Pro bietet 1.500 AI Credits im Monat. Deinen Verbrauch zeigt Copilot unten rechts und nach `/exit`.
+Die Runden stammen aus einem Test am 21. November 2026 mit Copilot CLI 1.0.114. Ein Skript beantwortete die Rückfragen, jeweils nach bis zu 15 Sekunden. Beide Runden liefen in einer Sitzung, spätere Schritte lasen also den ganzen Verlauf mit. Mit einer Sitzung pro Ticket liest Runde 2 den Verlauf von Runde 1 nicht mit. Zwei Punkte fielen auf:
+
+- Das Umsetzen dauerte jeweils etwa eine halbe Stunde.
+- Die beiden Archivierungen kosteten zusammen 64,5 AI Credits, mehr als beide Vorschläge.
+
+Die Fabrikwerte stammen aus Vortests im November 2026 mit denselben Versionen der Frameworks. Bei dir können die Werte abweichen. Copilot Pro bietet 1.500 AI Credits im Monat. Deinen Verbrauch zeigt Copilot unten rechts als „Session: … AIC used“ und nach `/exit`.
 
 ## Über dieses Repo
 
@@ -216,7 +237,7 @@ OpenSpec hat `.agents/skills/openspec-*` (12 Skills) und `openspec/` (`config.ya
 
 Lizenzen: Symfony-Demo MIT, siehe [`LICENSE`](LICENSE). OpenSpec ([Fission-AI/OpenSpec](https://github.com/Fission-AI/OpenSpec)) MIT.
 
-Stand: 20. November 2026. Wir haben mit Copilot CLI 1.0.112 und `claude-sonnet-5.5` getestet.
+Stand: 21. November 2026. Wir haben mit Copilot CLI 1.0.112 und 1.0.114 und `claude-sonnet-5.5` getestet.
 
 ## Die Fabrik am zweiten Tag
 
@@ -225,4 +246,4 @@ Die Fabrik nimmt OpenSpec, wenn das Jira-Ticket das Label `sdd-openspec` hat. Si
 - **Copilot fragt nicht.** Eine Liste freigegebener Werkzeuge ersetzt dein „Yes“. Alles andere lehnt Copilot ohne Rückfrage ab. Der Lauf endet trotzdem mit Exit-Code 0.
 - **Neue Sitzungen an zwei Stellen.** Die Fabrik arbeitet in zwei Läufen: erst der Vorschlag, dann die Umsetzung. Dazwischen gibt ein Mensch in Jira frei. Jeder Lauf startet eine neue Copilot-Sitzung und findet den Stand nur in den Dateien im Repo.
 
-Lokal ist alles ein durchgehender Ablauf in einer Sitzung.
+Lokal läuft jedes Ticket in einer Sitzung, vom Vorschlag bis zum Archiv.
