@@ -1,6 +1,6 @@
 # sdd-demo-openspec: Symfony-Demo mit OpenSpec
 
-Dieses Repo ist die [Symfony-Demo](https://github.com/symfony/demo), ein kleiner Blog mit PHP 8.4, Symfony, Doctrine, Twig, SQLite und 53 PHPUnit-Tests. Dazu liegt **OpenSpec 2.0.0** im Repo, für die **GitHub Copilot CLI** und mit allen 12 Workflows. Du klonst, startest `copilot` und legst los.
+Dieses Repo ist die [Symfony-Demo](https://github.com/symfony/demo), ein kleiner Blog mit PHP 8.4, Symfony, Doctrine, Twig, SQLite und 53 PHPUnit-Tests. Dazu liegt **OpenSpec 2.0.0** im Repo, für die **GitHub Copilot CLI** und mit allen 12 Workflows. Du klonst, startest `copilot`, legst einmal die Projektregeln fest und legst los.
 
 Es gibt drei solche Repos, eins pro Framework:
 
