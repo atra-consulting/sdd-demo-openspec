@@ -97,7 +97,7 @@ Am Ende vieler Schritte schlägt Copilot einen nächsten Schritt vor. Folge trot
 
 ## Einmalig: Projektregeln festlegen
 
-Das machst du einmal pro Repo, vor dem ersten Feature. OpenSpec liest die Regeln aus dem Feld `context:` in `openspec/config.yaml`, beim Vorschlagen und beim Umsetzen. Öffne die Datei in deinem Editor. Der Anfang soll danach so aussehen:
+Das machst du einmal pro Repo, vor dem ersten Feature. OpenSpec selbst liegt schon im Repo, siehe „So haben wir OpenSpec installiert“. OpenSpec liest die Regeln aus dem Feld `context:` in `openspec/config.yaml`, beim Vorschlagen und beim Umsetzen. Öffne die Datei in deinem Editor. Der Anfang soll danach so aussehen:
 
 ```yaml
 schema: spec-driven
@@ -223,6 +223,35 @@ Die Runden stammen aus einem Test am 21. November 2026 mit Copilot CLI 1.0.114. 
 - Die beiden Archivierungen kosteten zusammen 64,5 AI Credits, mehr als beide Vorschläge.
 
 Die Fabrikwerte stammen aus Vortests im November 2026 mit denselben Versionen der Frameworks. Bei dir können die Werte abweichen. Copilot Pro bietet 1.500 AI Credits im Monat. Deinen Verbrauch zeigt Copilot unten rechts als „Session: … AIC used“ und nach `/exit`.
+
+## So haben wir OpenSpec installiert
+
+OpenSpec liegt schon in diesem Repo. Für ein eigenes Repo gehst du so vor wie wir. Du brauchst dafür Node.js.
+
+Ohne weitere Einstellung installiert OpenSpec nur 6 seiner 12 Workflows. Für alle 12 haben wir vorher diese Datei angelegt, als `openspec/config.json` im Ordner von `$XDG_CONFIG_HOME`:
+
+```json
+{
+  "profile": "custom",
+  "workflows": ["propose", "explore", "new", "continue", "apply", "update", "ff", "sync", "archive", "bulk-archive", "verify", "onboard"],
+  "telemetry": { "enabled": false }
+}
+```
+
+Dann:
+
+```bash
+npm install -g @fission-ai/openspec@2.0.0
+export OPENSPEC_TELEMETRY=0
+cd <dein-repo>
+openspec init --tools github-copilot --no-copilot-cloud --no-animation .
+openspec update .
+```
+
+- `openspec init` legt `openspec/` und die Skills in `.agents/skills/` an. `--tools github-copilot` wählt die Copilot CLI. `--no-copilot-cloud` lässt den Cloud-Agenten von Copilot aus.
+- `openspec update .` richtet die Workflows aus der Datei oben ein.
+
+Danach fehlt in `openspec/config.yaml` noch das Feld `context:`. Die Projektregeln legst du einmal selbst fest, wie in „Einmalig: Projektregeln festlegen“.
 
 ## Über dieses Repo
 
